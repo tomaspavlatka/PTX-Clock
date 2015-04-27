@@ -12,8 +12,6 @@ class ClockTest extends PHPUnit_Framework_TestCase {
     protected function setUp()
     {
         parent::setUp();
-
-        $this->Clock = new \PTX\Clock();
     }
 
     protected function tearDown()
@@ -23,16 +21,20 @@ class ClockTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @param string $time
+     * @param int $expected_hour
+     * @param int $expected_min
+     *
      * @dataProvider data_testInit_ValidTime_ProperData
      */
     public function testInit_ValidTime_ProperData($time, $expected_hour, $expected_min)
     {
-        $this->Clock->init($time);
+        $this->init_object($time);
 
-        $hour = $this->Clock->getHour();
+        $hour = $this->Clock->get_hour();
         $this->assertEquals($hour, $expected_hour);
 
-        $hour = $this->Clock->getMin();
+        $hour = $this->Clock->get_min();
         $this->assertEquals($hour, $expected_min);
     }
 
@@ -41,12 +43,12 @@ class ClockTest extends PHPUnit_Framework_TestCase {
      */
     public function testInit_InvalidTime_Exception()
     {
-        $this->Clock->init('14:25');
+        $this->init_object('14:25');
 
-        $hour = $this->Clock->getHour();
+        $hour = $this->Clock->get_hour();
         $this->assertEquals($hour, 10);
 
-        $hour = $this->Clock->getMin();
+        $hour = $this->Clock->get_min();
         $this->assertEquals($hour, 25);
     }
 
@@ -58,5 +60,10 @@ class ClockTest extends PHPUnit_Framework_TestCase {
             array('1:01', 01, 01),
             array('1:1', 01, 01),
         );
+    }
+
+    public function init_object(array $params = array())
+    {
+        $this->Clock = new \PTX\Clock($params);
     }
 }

@@ -235,6 +235,31 @@ class ClockCanvas {
     }
 
     /**
+     * Returns int of color.
+     *
+     * @param string $color - name of the color.
+     *
+     * @return int
+     */
+    private function _get_color($color)
+    {
+        switch($color) {
+            case 'blue':
+                return imagecolorallocate($this->_image, 25, 25, 112);
+            case 'green':
+                return imagecolorallocate($this->_image, 0, 100, 0);
+            case 'red':
+                return imagecolorallocate($this->_image, 255, 0, 0);
+            case 'white':
+                return imagecolorallocate($this->_image, 255, 255, 255);
+            case 'yellow':
+                return imagecolorallocate($this->_image, 255, 255, 0);
+        }
+
+        return 0; // Black
+    }
+
+    /**
      * Returns coordinates for a number.
      *
      * @param float $angle
@@ -323,31 +348,4 @@ class ClockCanvas {
         // 4. Prepare base.
         $this->_draw_canvas();
     }
-
-    /**
-     * Returns int of color.
-     *
-     * @param string $color - name of the color.
-     *
-     * @return int
-     */
-    private function _get_color($color)
-    {
-        switch($color) {
-            case 'blue':
-                return imagecolorallocate($this->_image, 25, 25, 112);
-            case 'green':
-                return imagecolorallocate($this->_image, 0, 100, 0);
-            case 'red':
-                return imagecolorallocate($this->_image, 255, 0, 0);
-            case 'white':
-                return imagecolorallocate($this->_image, 255, 255, 255);
-            case 'yellow':
-                return imagecolorallocate($this->_image, 255, 255, 0);
-        }
-
-        return 0;
-    }
-
-
 }
