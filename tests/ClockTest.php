@@ -62,8 +62,8 @@ class ClockTest extends PHPUnit_Framework_TestCase {
         );
     }
 
-    public function init_object(array $params = array())
+    public function init_object($time)
     {
-        $this->Clock = new \PTX\Clock($params);
+        $this->Clock = new \PTX\Clock($time);
     }
 }
