@@ -3,7 +3,7 @@
 require_once './vendor/autoload.php';
 
 try {
-    $base = new PTX\ClockBase();
+    $base = new PTX\ClockCanvas();
     $base->draw();
     $file_path = './cache/base.png';
     $base->to_browser();

@@ -1,7 +1,7 @@
 <?php
 namespace PTX;
 
-class ClockBase {
+class ClockCanvas {
 
     /**
      * @var

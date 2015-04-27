@@ -1,8 +1,11 @@
 <?php
 
-class ClockBaseTest extends PHPUnit_Framework_TestCase {
+/**
+ * Class ClockCanvasTest
+ */
+class ClockCanvasTest extends PHPUnit_Framework_TestCase {
 
-    private $ClockBase;
+    private $ClockCanvas;
 
     protected function setUp()
     {
@@ -11,14 +14,14 @@ class ClockBaseTest extends PHPUnit_Framework_TestCase {
 
     protected function tearDown()
     {
-        unset($this->ClockBase);
+        unset($this->ClockCanvas);
         parent::tearDown();
     }
 
     public function testInit_NoParams_CorrectCanvasCenter()
     {
         $this->init_object();
-        $params = $this->ClockBase->get_params();
+        $params = $this->ClockCanvas->get_params();
         $this->assertEquals(400, $params['width']);
         $this->assertEquals(400, $params['height']);
 
@@ -38,7 +41,7 @@ class ClockBaseTest extends PHPUnit_Framework_TestCase {
     public function testInit_ParamsWidthHeight_CorrectMainCircle($params, $expected)
     {
         $this->init_object($params);
-        $clock_params = $this->ClockBase->get_params();
+        $clock_params = $this->ClockCanvas->get_params();
 
         $circle_main = $clock_params['circle_main'];
         $this->assertEquals($expected['center']['x'], $circle_main['center']['x']);
@@ -51,7 +54,7 @@ class ClockBaseTest extends PHPUnit_Framework_TestCase {
     public function testInit_NoParams_CorrectCenterCircle()
     {
         $this->init_object();
-        $clock_params = $this->ClockBase->get_params();
+        $clock_params = $this->ClockCanvas->get_params();
 
         // Correct size.
         $circle_center = $clock_params['circle_center'];
@@ -67,7 +70,7 @@ class ClockBaseTest extends PHPUnit_Framework_TestCase {
     public function testInit_ParamsWidthHeight_CorrectCanvasCenter($params, $expected_canvas_center)
     {
         $this->init_object($params);
-        $clock_params = $this->ClockBase->get_params();
+        $clock_params = $this->ClockCanvas->get_params();
         $this->assertEquals($params['width'], $clock_params['width']);
         $this->assertEquals($params['height'], $clock_params['height']);
 
@@ -124,6 +127,6 @@ class ClockBaseTest extends PHPUnit_Framework_TestCase {
 
     public function init_object(array $params = array())
     {
-        $this->ClockBase = new \PTX\ClockBase($params);
+        $this->ClockCanvas = new \PTX\ClockCanvas($params);
     }
 }
