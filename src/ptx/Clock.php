@@ -101,7 +101,7 @@ class Clock {
         // 1. Find coordinates.
         $angle = $this->_hour * 30 - 90;
         $angle += $this->_min * 0.5; // Adds effect for minutes.
-        $coordinates = $this->_get_coordinates($angle, 4.5);
+        $coordinates = $this->_get_coordinates($angle, 5.5);
 
         // 2. Get canvas center.
         $canvas_center = $this->_canvas_params['canvas']['center'];
