@@ -10,7 +10,7 @@ You will need a composer to install autoload for you
 composer install --no-dev
 ```
 
-## Example.
+## Example
 
 ```
 require_once './vendor/autoload.php';
@@ -23,4 +23,9 @@ try {
     echo $e->getMessage();
 }
 ```
+
+## Example online
+
+[Visit my page](http://showroom.pavlatka.cz/clock/) and see it in action.
+
 
