@@ -2,7 +2,11 @@
 
 require_once './vendor/autoload.php';
 
-$base = new PTX\ClockBase();
-$base->init();
-$base->draw_base();
-
+try {
+    $base = new PTX\ClockBase();
+    $base->draw();
+    $file_path = './cache/base.png';
+    $base->to_browser();
+} catch(\PTX\ClockException $e) {
+    echo $e->getMessage();
+}

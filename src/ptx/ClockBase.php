@@ -3,18 +3,34 @@ namespace PTX;
 
 class ClockBase {
 
-    private $_params = array(
-        'width' => 400,
-        'height' => 400
-    );
-
+    /**
+     * @var
+     */
     private $_image;
 
-    public function __construct()
-    {
-    }
+    /**
+     * Holds params for the class.
+     *
+     * @var array
+     */
+    private $_params = array(
+        'width' => 400,
+        'height' => 400,
+        'background' => 'white',
+        'canvas_background' => 'black',
+        'major_numbers' => array(
+            'color' => 'black', 'size' => 20),
+        'minor_numbers' => array(
+            'color' => 'black', 'size' => 10),
+        'font' => './fonts/instruction/instruction.ttf');
 
-    public function init(array $params = array())
+    /**
+     * Constructor of the class.
+     *
+     * @param array $params - possible to affect the
+     * final result.
+     */
+    public function __construct(array $params = array())
     {
         // 1. Merge params.
         $this->_params = array_merge($this->_params, $params);
@@ -24,14 +40,32 @@ class ClockBase {
     }
 
     /**
+     * Cleans up.
+     */
+    public function __destruct()
+    {
+        // If we have an image, destroy it and free the memory
+        if(!empty($this->_image)) {
+            imagedestroy($this->_image);
+        }
+    }
+
+    /**
      * Draws the clock.
      */
-    public function draw_base() {
-        // 1. Draw clock.
-        $this->_draw_clock();
+    public function draw()
+    {
+        // 1. Draw main circle.
+        $this->_draw_circle('circle_main');
 
-        // Send it to browser.
-        $this->_sent_to_browser();
+        // 2. Draw center circle.
+        $this->_draw_circle('circle_center');
+
+        // 3. Draw main number.
+        $this->_draw_major_numbers();
+
+        // 4. Draw minor numbers.
+        $this->_draw_minor_numbers();
     }
 
     /**
@@ -45,23 +79,47 @@ class ClockBase {
     }
 
     /**
-     * Draws main clock layout.
+     * Saves image into file path given.
      *
+     * @param string $file_path
      * @throws ClockException
      */
-    private function _draw_clock()
+    public function to_file($file_path)
     {
-        // 1. Draw main circle.
-        $this->_draw_circle('circle_main');
+        if(empty($this->_image)) {
+            throw new ClockException("I cannot find the image.");
+        }
 
-        // 2. Draw center circle.
-        $this->_draw_circle('circle_center');
+        if(!imagepng($this->_image, $file_path)) {
+            throw new ClockException("I could not save image into $file_path.");
+        }
+    }
 
-        // 3. Draw main number.
-        $this->_draw_main_numbers();
+    /**
+     * Sends result to browser.
+     */
+    public function to_browser()
+    {
+        if(empty($this->_image)) {
+            throw new ClockException("I cannot find the image.");
+        }
 
-        // 4. Draw minor numbers.
-        $this->_draw_minor_numbers();
+        header("Content-type: image/png");
+        imagepng($this->_image);
+    }
+
+    /**
+     * Prepares canvas.
+     */
+    private function _draw_canvas()
+    {
+        // 1. Set image
+        $this->_image = imagecreatetruecolor($this->_params['width'], $this->_params['height']);
+
+        // 2. Fill it with background color.
+        $canvas = $this->_params['canvas'];
+        $color = $this->_get_color($canvas['color']);
+        imagefill($this->_image, 0, 0, $color);
     }
 
     /**
@@ -76,7 +134,7 @@ class ClockBase {
         // 1. Get data about circle.
         $circle = $this->_params[$key];
         if(empty($circle)) {
-           throw new ClockException("Unknown data for $key - Did you call init() function?");
+           throw new ClockException("Unknown data for $key.");
         }
 
         // 2. Find color.
@@ -87,30 +145,51 @@ class ClockBase {
         imagefilledellipse($this->_image, $center['x'] , $center['y'], $circle['size'], $circle['size'], $circle_color);
     }
 
-    private function _draw_main_numbers()
+    /**
+     * Draws main number into the clock.
+     */
+    private function _draw_major_numbers()
     {
-        $main_number = array(3, 6, 9, 12);
+        // 1. Find font settings.
+        $font = $this->_params['major_numbers'];
 
-        foreach($main_number as $number) {
-            $this->_draw_number($number, 20);
+        // 2. Draw number one by one.
+        $major_numbers = array(3, 6, 9, 12);
+        foreach($major_numbers as $number) {
+            $this->_draw_number($number, $font['size'], $font['color']);
         }
     }
 
+    /**
+     * Draws minor numbers into the clock.
+     */
     private function _draw_minor_numbers()
     {
-        $main_number = array(1, 2, 4, 5, 7, 8, 10, 11);
+        // 1. Find font settings.
+        $font = $this->_params['minor_numbers'];
 
-        foreach($main_number as $number) {
-            $this->_draw_number($number, 10);
+        // 2. Draw number one by one.
+        $minor_numbers = array(1, 2, 4, 5, 7, 8, 10, 11);
+        foreach($minor_numbers as $number) {
+            $this->_draw_number($number, $font['size'], $font['color']);
         }
     }
 
-    private function _draw_number($number, $font_size)
+    /**
+     * Draws a single number into the clock.
+     *
+     * @param int $number
+     * @param int $font_size
+     * @param mixed $color - font color.
+     */
+    private function _draw_number($number, $font_size, $color)
     {
+        // 1. Get coordinates.
         $angle_part = 12 / $number;
-        $angle = 360 / $angle_part - 90;
+        $angle = 360 / $angle_part - 90; // coordinates starts on number 3
         $coordinates = $this->_get_number_coordinates($angle);
 
+        // 2. Small corrections for better look.
         switch($number) {
             case 3:
             case 9:
@@ -124,8 +203,9 @@ class ClockBase {
                 break;
         }
 
-        $color = $this->_get_color('black');
-        $font = './fonts/instruction/instruction.ttf';
+        // 3. Draw.
+        $font = $this->_params['font'];
+        $color = $this->_get_color($color);
         imagefttext($this->_image, $font_size, 0, $coordinates['x'], $coordinates['y'], $color, $font, $number);
     }
 
@@ -154,6 +234,13 @@ class ClockBase {
         return (array)$center;
     }
 
+    /**
+     * Returns coordinates for a number.
+     *
+     * @param float $angle
+     *
+     * @return array - x, y
+     */
     private function _get_number_coordinates($angle)
     {
         $circle = $this->_params['circle_main'];
@@ -172,31 +259,14 @@ class ClockBase {
     }
 
     /**
-     * Prepares base.
-     */
-    private function _prepare_base()
-    {
-        // 1. Set image
-        $this->_image = imagecreatetruecolor($this->_params['width'], $this->_params['height']);
-
-        // 2. Fill it with background color.
-        imagecolorallocate($this->_image, 0, 0, 0);
-
-        // 3. Prepare colors.
-        $white = imagecolorallocate($this->_image, 255, 255, 255);
-        $black = imagecolorallocate($this->_image, 0, 0, 0);
-        $this->_params['colors'] = array(
-            'white' => $white, 'black' => $black);
-    }
-
-    /**
      * Counts and stores into $this->_params information
      * about canvas.
      */
     private function _prepare_canvas()
     {
         $this->_params['canvas'] = array(
-            'center' => $this->_get_canvas_center());
+            'center' => $this->_get_canvas_center(),
+            'color' => $this->_params['canvas_background']);
     }
 
     /**
@@ -207,9 +277,9 @@ class ClockBase {
     {
         $center = $this->_get_canvas_center();
         $this->_params['circle_center'] = array(
+            'size'   => 10,
             'center' => $center,
-            'color'  => 'black',
-            'size'   => 10);
+            'color'  => $this->_params['major_numbers']['color']);
     }
 
     /**
@@ -251,16 +321,7 @@ class ClockBase {
         $this->_prepare_center_circle();
 
         // 4. Prepare base.
-        $this->_prepare_base();
-    }
-
-    /**
-     * Last step - sends to browser.
-     */
-    private function _sent_to_browser()
-    {
-        header("Content-type: image/png");
-        imagepng($this->_image);
+        $this->_draw_canvas();
     }
 
     /**
@@ -272,9 +333,17 @@ class ClockBase {
      */
     private function _get_color($color)
     {
-        if (array_key_exists($color, $this->_params['colors'])) {
-            $color = $this->_params['colors'][$color];
-            return (int)$color;
+        switch($color) {
+            case 'blue':
+                return imagecolorallocate($this->_image, 25, 25, 112);
+            case 'green':
+                return imagecolorallocate($this->_image, 0, 100, 0);
+            case 'red':
+                return imagecolorallocate($this->_image, 255, 0, 0);
+            case 'white':
+                return imagecolorallocate($this->_image, 255, 255, 255);
+            case 'yellow':
+                return imagecolorallocate($this->_image, 255, 255, 0);
         }
 
         return 0;

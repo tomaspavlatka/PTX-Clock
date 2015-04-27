@@ -7,8 +7,6 @@ class ClockBaseTest extends PHPUnit_Framework_TestCase {
     protected function setUp()
     {
         parent::setUp();
-
-        $this->ClockBase = new \PTX\ClockBase();
     }
 
     protected function tearDown()
@@ -19,7 +17,7 @@ class ClockBaseTest extends PHPUnit_Framework_TestCase {
 
     public function testInit_NoParams_CorrectCanvasCenter()
     {
-        $this->ClockBase->init();
+        $this->init_object();
         $params = $this->ClockBase->get_params();
         $this->assertEquals(400, $params['width']);
         $this->assertEquals(400, $params['height']);
@@ -39,7 +37,7 @@ class ClockBaseTest extends PHPUnit_Framework_TestCase {
      */
     public function testInit_ParamsWidthHeight_CorrectMainCircle($params, $expected)
     {
-        $this->ClockBase->init($params);
+        $this->init_object($params);
         $clock_params = $this->ClockBase->get_params();
 
         $circle_main = $clock_params['circle_main'];
@@ -52,7 +50,7 @@ class ClockBaseTest extends PHPUnit_Framework_TestCase {
 
     public function testInit_NoParams_CorrectCenterCircle()
     {
-        $this->ClockBase->init();
+        $this->init_object();
         $clock_params = $this->ClockBase->get_params();
 
         // Correct size.
@@ -68,7 +66,7 @@ class ClockBaseTest extends PHPUnit_Framework_TestCase {
      */
     public function testInit_ParamsWidthHeight_CorrectCanvasCenter($params, $expected_canvas_center)
     {
-        $this->ClockBase->init($params);
+        $this->init_object($params);
         $clock_params = $this->ClockBase->get_params();
         $this->assertEquals($params['width'], $clock_params['width']);
         $this->assertEquals($params['height'], $clock_params['height']);
@@ -122,5 +120,10 @@ class ClockBaseTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
         );
+    }
+
+    public function init_object(array $params = array())
+    {
+        $this->ClockBase = new \PTX\ClockBase($params);
     }
 }
