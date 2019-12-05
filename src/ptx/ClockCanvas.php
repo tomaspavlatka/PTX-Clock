@@ -106,6 +106,19 @@ class ClockCanvas {
     }
 
     /**
+     * Returns the image resource;
+     *
+     * @return resource
+     * @throws ClockException
+     */
+    public function get_image_resource(){
+        if(empty($this->_image)) {
+            throw new ClockException("I cannot find the image.");
+        }
+        return $this->_image;
+    }
+
+    /**
      * Saves image into file path given.
      *
      * @param string $file_path
