@@ -34,7 +34,7 @@ class Clock {
     public function __construct($time)
     {
         // Must be valid time.
-        if(!preg_match('/^(0?[1-9]|1[0-2]):([0-5]?[0-59])$/', $time)) {
+        if(!preg_match('/^(0?[1-9]|1[0-2]):([0-5]?[0-9])$/', $time)) {
             throw new ClockException("Time {$time} is not a valid time.");
         }
 
