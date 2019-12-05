@@ -100,10 +100,10 @@ class Clock {
      * @throws ClockException
      */
     public function get_image_resource(){
-        if(empty($this->_image)) {
+        if(empty($this->_canvas)) {
             throw new ClockException("I cannot find the image.");
         }
-        return $this->_image;
+        return $this->_canvas;
     }
 
     /**
