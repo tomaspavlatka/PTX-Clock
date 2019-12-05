@@ -277,12 +277,16 @@ class ClockCanvas {
     /**
      * Returns int of color.
      *
-     * @param string $color - name of the color.
+     * @param string|array $color - name of the color.
      *
      * @return int
      */
     private function _get_color($color)
     {
+        if(is_array($color) === true && isset($color['r']) && isset($color['g']) && isset($color['b'])){
+            return imagecolorallocate($this->_image, $color['r'], $color['g'], $color['b']);            
+        }
+        
         switch($color) {
             case 'blue':
                 return imagecolorallocate($this->_image, 25, 25, 112);
