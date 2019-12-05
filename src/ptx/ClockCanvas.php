@@ -9,6 +9,11 @@ class ClockCanvas {
     private $_image;
 
     /**
+     * @var
+     */
+    private $_basePath;
+
+    /**
      * Holds params for the class.
      *
      * @var array
@@ -19,10 +24,15 @@ class ClockCanvas {
         'background' => 'white',
         'canvas_background' => 'black',
         'major_numbers' => array(
-            'color' => 'black', 'size' => 20),
+            'color' => 'black',
+            'size' => 20
+        ),
         'minor_numbers' => array(
-            'color' => 'black', 'size' => 10),
-        'font' => './fonts/instruction/instruction.ttf');
+            'color' => 'black',
+            'size' => 10
+        ),
+        'font' => null
+    );
 
     /**
      * Constructor of the class.
@@ -32,11 +42,28 @@ class ClockCanvas {
      */
     public function __construct(array $params = array())
     {
+
+        $this->_basePath = dirname(dirname(dirname(__FILE__)));
+
         // 1. Merge params.
         $this->_params = array_merge($this->_params, $params);
 
+        if($this->_params['font'] === null){
+            $this->_params['font'] = $this->_basePath . '/fonts/instruction/instruction.ttf';
+        }
+
         // 2. Do some preparation.
         $this->_prepare_params();
+    }
+
+    /**
+     * Returns the library base path
+     *
+     * @return string
+     */
+    public function get_base_path()
+    {
+        return $this->_basePath;
     }
 
     /**

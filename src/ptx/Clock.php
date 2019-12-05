@@ -138,8 +138,8 @@ class Clock {
     private function _get_canvas(array $params = array())
     {
         // Save canvas to a file.
-        $file_path = './cache/base.png';
         $canvas = new ClockCanvas($params);
+        $file_path = $canvas->get_base_path().'/cache/base.png';
         $canvas->draw();
         $canvas->to_file($file_path);
 
