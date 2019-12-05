@@ -94,6 +94,19 @@ class Clock {
     }
 
     /**
+     * Returns the image resource;
+     *
+     * @return resource
+     * @throws ClockException
+     */
+    public function get_images_resource(){
+        if(empty($this->_image)) {
+            throw new ClockException("I cannot find the image.");
+        }
+        return $this->_image;
+    }
+    
+    /**
      * Draws a line for hour.
      */
     private function _draw_hour()
