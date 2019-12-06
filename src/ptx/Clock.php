@@ -16,6 +16,11 @@ class Clock {
     private $_canvas_params;
 
     /**
+     * @var
+     */
+    private $_basePath;
+
+    /**
      * @var null
      */
     private $_hour = null;
@@ -33,8 +38,10 @@ class Clock {
      */
     public function __construct($time)
     {
+        $this->_basePath = dirname(dirname(dirname(__FILE__)));
+
         // Must be valid time.
-        if(!preg_match('/^(0?[1-9]|1[0-2]):([0-5]?[0-59])$/', $time)) {
+        if(!preg_match('/^(0?[1-9]|1[0-2]):([0-5]?[0-9])$/', $time)) {
             throw new ClockException("Time {$time} is not a valid time.");
         }
 
@@ -94,6 +101,19 @@ class Clock {
     }
 
     /**
+     * Returns the image resource;
+     *
+     * @return resource
+     * @throws ClockException
+     */
+    public function get_image_resource(){
+        if(empty($this->_canvas)) {
+            throw new ClockException("I cannot find the image.");
+        }
+        return $this->_canvas;
+    }
+
+    /**
      * Draws a line for hour.
      */
     private function _draw_hour()
@@ -138,16 +158,21 @@ class Clock {
     private function _get_canvas(array $params = array())
     {
         // Save canvas to a file.
-        $file_path = './cache/base.png';
-        $canvas = new ClockCanvas($params);
-        $canvas->draw();
-        $canvas->to_file($file_path);
+        $cachedCanvasFileName = 'canvas_'.md5(json_encode($params)).'.png';
+        $cachedCanvasPath = $this->_basePath.'/cache/'.$cachedCanvasFileName;
 
-        if(!file_exists($file_path)) {
+        $canvas = new ClockCanvas($params);
+
+        if(!file_exists($cachedCanvasPath)) {
+            $canvas->draw();
+            $canvas->to_file($cachedCanvasPath);
+        }
+
+        if(!file_exists($cachedCanvasPath)) {
             throw new ClockException("Could not load canvas for the clock.");
         }
 
-        $this->_canvas = imagecreatefrompng($file_path);
+        $this->_canvas = imagecreatefrompng($cachedCanvasPath);
         $this->_canvas_params = $canvas->get_params();
     }
 
@@ -199,12 +224,16 @@ class Clock {
     /**
      * Returns int of color.
      *
-     * @param string $color - name of the color.
+     * @param string|array $color - name of the color.
      *
      * @return int
      */
     private function _get_color($color)
     {
+        if(is_array($color) === true && isset($color['r']) && isset($color['g']) && isset($color['b'])){
+            return imagecolorallocate($this->_canvas, $color['r'], $color['g'], $color['b']);
+        }
+        
         switch($color) {
             case 'blue':
                 return imagecolorallocate($this->_canvas, 25, 25, 112);
